@@ -9,6 +9,11 @@ let load = document.querySelector('.loading');
 searchBtn.addEventListener('click', function (e){
     e.preventDefault();
     
+    // clear the previous data 
+    audioBox.innerText = '';
+    defBox.innerText = '';
+    notFound.innerText = '';
+
     // Get input data
     let word = input.value;
     if(word === ''){
@@ -21,18 +26,21 @@ searchBtn.addEventListener('click', function (e){
 })
 
 async function getData(word) {
-    //  console.log(word);
+
+    load.style.display = 'block';
     const res = await fetch(`https://dictionaryapi.com/api/v3/references/collegiate/json/${word}?key=${apiKey}`);
     const data = await  res.json();
 
     // if empty result  --> if we write gibberish the the length of array in respoonse will be 0 and we cre checking that here
     if(!data.length){
+        load.style.display = 'none';
         notFound.innerText = 'No result Found';
         return;
     }
 
     // if result is suggestion 
     if(typeof data[0] === 'string'){
+        load.style.display = 'none';
         let heading = document.createElement('h3')
         heading.innerText = 'Did you mean ?';
         notFound.appendChild(heading);
@@ -46,7 +54,7 @@ async function getData(word) {
     }
 
     // if result is found 
-    load.style.display = 'block';
+    load.style.display = 'none';
     let definition = data[0].shortdef[0];
     defBox.innerText = definition;
 
